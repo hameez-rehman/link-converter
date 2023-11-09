@@ -13,6 +13,11 @@ $ npm ci
 $ docker compose up washmen-db -d
 ```
 
+## Running Migrations
+```bash
+$ npm run migration:run  
+```
+
 
 ## Running the app
 copy sample.env to .env
