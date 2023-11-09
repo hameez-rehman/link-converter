@@ -1,0 +1,46 @@
+version: '3.5'
+
+services:
+
+  washmen-db:
+    image: postgis/postgis:16-3.4
+    container_name: 'washmen-db'
+    volumes:
+      - washmen-db:/var/lib/postgresql/data
+      - ./pg-init-scripts:/docker-entrypoint-initdb.d
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c random_page_cost=1.0
+    ports:
+      - '5450:5432'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      # Add extensions you need to be enabled by default in the DB. Default are the five specified below
+      POSTGRES_MULTIPLE_EXTENSIONS: postgis,hstore,postgis_topology,postgis_raster,pgrouting
+    restart: on-failure
+    healthcheck:
+      test: 'exit 0'
+  link-converter:
+    build:
+      context: .
+      args:
+        PORT: ${PORT} # from .env file
+    env_file:
+      - .env
+    ports:
+      - 3090:3090
+    environment:
+      - BASE_URL=${BASE_URL}
+      - DEEPLINK_URL=${DEEPLINK_URL}
+      - TYPEORM_CONNECTION=${TYPEORM_CONNECTION}
+      - ENABLE_QUERY_LOGGING=${ENABLE_QUERY_LOGGING}
+      - DATABASE_PORT=5432
+      - DATABASE_HOST=washmen-db
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+ 
+
+volumes:
+  washmen-db:
+    driver: local
