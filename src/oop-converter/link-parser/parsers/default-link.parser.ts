@@ -20,4 +20,8 @@ export class DefaultLinkParser extends LinkParser {
   toDeeplink() {
     return `${process.env.DEEPLINK_URL}?Page=Home`;
   }
+
+  toWeblink() {
+    return process.env.BASE_URL;
+  }
 }

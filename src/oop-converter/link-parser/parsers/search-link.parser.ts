@@ -10,6 +10,7 @@ export class SearchLinkParser extends LinkParser {
   constructor(url: string) {
     super(url, ['q']);
     this.weblinkRegex = SearchRegex.weblink;
+    this.deeplinkRegex = SearchRegex.deeplink;
 
     if (this.weblinkRegex.test(url)) {
       this.parseWeblink(url);
@@ -36,6 +37,12 @@ export class SearchLinkParser extends LinkParser {
 
   toDeeplink() {
     const url = `${process.env.DEEPLINK_URL}?Page=Search&Query=${this.q}`;
+    return url;
+  }
+
+  toWeblink() {
+    const url = `${process.env.BASE_URL}/sr?q=${this.q}`;
+
     return url;
   }
 }

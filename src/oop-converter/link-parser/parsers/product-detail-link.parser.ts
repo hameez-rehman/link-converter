@@ -15,6 +15,7 @@ export class ProductDetailLinkParser extends LinkParser {
     super(url, ['productId']);
     const productRegex = ProductRegex;
     this.weblinkRegex = productRegex.weblink;
+    this.deeplinkRegex = productRegex.deeplink;
 
     if (this.weblinkRegex.test(url)) {
       this.parseWeblink(url);
@@ -37,7 +38,6 @@ export class ProductDetailLinkParser extends LinkParser {
 
   parseWeblink(url: string) {
     const match = url.match(this.weblinkRegex);
-    console.log(JSON.stringify(this.weblinkRegex.toString()));
     if (match) {
       const groups = match.groups;
       this.serviceName = groups.serviceName;
@@ -59,6 +59,17 @@ export class ProductDetailLinkParser extends LinkParser {
     }
     if (this.clusterId) {
       url += `&ClusterId=${this.clusterId}`;
+    }
+    return url;
+  }
+
+  toWeblink() {
+    let url = `${process.env.BASE_URL}/${this.serviceName}/${this.productId}`;
+    if (this.cityId || this.clusterId) {
+      url += '?';
+      if (this.cityId) url += `cityId=${this.cityId}`;
+      if (this.cityId && this.clusterId) url += '&';
+      if (this.clusterId) url += `clusterId=${this.clusterId}`;
     }
     return url;
   }

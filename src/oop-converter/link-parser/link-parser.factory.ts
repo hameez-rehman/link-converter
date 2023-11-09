@@ -6,7 +6,9 @@ export class LinkParserFactory {
   private constructor() {}
 
   static getParser(url: string): LinkParser {
-    const index = AllRegexParser.findIndex((p) => p.weblink.test(url));
+    const index = AllRegexParser.findIndex(
+      (p) => p.weblink.test(url) || p.deeplink.test(url),
+    );
     if (index < 0) {
       return new DefaultLinkParser(url);
     }

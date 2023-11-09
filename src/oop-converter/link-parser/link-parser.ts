@@ -23,6 +23,8 @@ export abstract class LinkParser {
 
   abstract toDeeplink(): string;
 
+  abstract toWeblink(): string;
+
   validate() {
     if (!this._requiredFields?.length) {
       return true;

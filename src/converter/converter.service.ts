@@ -8,4 +8,8 @@ export class ConverterService {
   convertToDeeplink(url: string) {
     return this.parser.toDeeplink(url);
   }
+
+  convertToWeblink(url: string) {
+    return this.parser.toWeblink(url);
+  }
 }

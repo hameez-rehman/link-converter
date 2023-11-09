@@ -11,4 +11,13 @@ export class OopConverterService {
     }
     return parser.toDeeplink();
   }
+
+  convertToWeblink(url: string) {
+    const parser = LinkParserFactory.getParser(url);
+    const isValid = parser.validate();
+    if (!isValid) {
+      throw new BadRequestException('Url not Valid');
+    }
+    return parser.toWeblink();
+  }
 }

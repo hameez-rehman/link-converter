@@ -121,4 +121,52 @@ export class Parser {
       return `${process.env.DEEPLINK_URL}?Page=Home`;
     }
   }
+
+  toWeblink(deeplink: string) {
+    const schema = this.parsedSchemas.find((schema) =>
+      deeplink.includes(schema.deeplink.url),
+    );
+    if (!schema) {
+      return `${process.env.BASE_URL}`;
+    }
+    const [, query] = deeplink.split('?', 2);
+    let queryString = '';
+    if (query?.length) {
+      const params = parseQueryWithoutDecoding(query);
+      const parsedQueryParams = {};
+      delete params['Page'];
+      let webUrl = schema.weblink.url;
+      for (const key in schema.deeplink.queryParams) {
+        const groupKey = schema.deeplink.queryParams[key];
+        webUrl = webUrl
+          .replace(groupKey, params[key] as string)
+          .replace(bracesRegex, '');
+        parsedQueryParams[groupKey] = params[key];
+      }
+
+      const isValid = this.validate(parsedQueryParams, schema.requiredField);
+      if (!isValid) {
+        throw new BadRequestException('Required Field is missing');
+      }
+
+      // for handling {productName}-p- case as incoming and outgoing weblinks dont match
+      if (webUrl.includes('productName-p-')) {
+        webUrl = webUrl.replace('productName-p-', '');
+      }
+
+      if (schema.weblink.queryParams) {
+        for (const key in schema.weblink.queryParams) {
+          if (parsedQueryParams[key]) {
+            if (queryString.length) {
+              queryString += '&';
+            } else {
+              queryString += '?';
+            }
+            queryString += `${key}=${parsedQueryParams[key]}`;
+          }
+        }
+      }
+      return webUrl + queryString;
+    }
+  }
 }
